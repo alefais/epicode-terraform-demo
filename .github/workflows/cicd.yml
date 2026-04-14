@@ -11,8 +11,10 @@ jobs:
       run:
         working-directory: my-infra
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.14.6
 
       - name: Terraform Init
         run: terraform init
