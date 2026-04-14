@@ -7,6 +7,9 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: my-infra
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
