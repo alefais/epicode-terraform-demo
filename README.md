@@ -338,3 +338,7 @@ this will prompt for the access key, secret key, and default region.
 ![alt text](aws-screen/running-s3-buckets.png)
 
 > The second S3 bucket showed here is the one created to configure Terraform remote state.
+
+### The content of the Terraform remote state S3 bucket
+
+![alt text](aws-screen/running-s3-terraform-state.png)
