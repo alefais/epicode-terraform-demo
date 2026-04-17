@@ -142,6 +142,7 @@ Plan: 2 to add, 0 to change, 0 to destroy.
 ```
 
 **Symbol key:**
+
 - `+` → create  `~` → modify in place  `-` → destroy
 
 ### Step 3: making the changes
@@ -182,6 +183,7 @@ instance_public_ip = "54.123.45.67"
   - two engineers running `apply` simultaneously → state collision → broken infrastructure
 
 The solution is configuring a remote state: store state in a **shared, locked backend**. Standard AWS pattern:
+
 - **S3 bucket** → stores the state file
 - **DynamoDB table** → provides state locking (prevents concurrent runs)
 
@@ -234,7 +236,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
-**The Professional Team Workflow**
+### The Professional Team Workflow
 
 | Event | What runs | Who sees it |
 |-------|----------|-------------|
@@ -250,6 +252,8 @@ jobs:
 ---
 
 ## AWS-related configuration steps
+
+To test this Terraform project, you can fork this repo and try configuring your AWS account and infra, and update the Terraform config files and the CI/CD pipeline config accordingly.
 
 ### CI/CD testing - Step 1: you need an AWS account
 
@@ -283,12 +287,6 @@ jobs:
   - AWS_ACCESS_KEY_ID → the AKIA... value
   - AWS_SECRET_ACCESS_KEY → the longer secret value
 
-- Go to the **Amazon S3** console → **Buckets** → **General purpose buckets** and click on **Create bucket** to create the S3 bucket for the Terraform state; this must be done before Terraform can use it as backend; the S3 state bucket is often created separately, either manually or in a "bootstrap" Terraform project, before the main project can use it; we will create it manually in the AWS console, and when we run the pipeline, Terraform `init` will find the bucket and store the state there
-  - **Bucket name:** my-terraform-state-bucket (or pick any unique name and update `main.tf` to match)
-  - **Region:** must match the region in your backend block
-  - Leave defaults (Block Public Access enabled, etc.)
-  - Click **Create bucket**
-
 > As a general rule: if it grants access, it's a secret; if it's just a name or configuration value, it belongs in code where it can be reviewed and version-controlled. E.g., the state bucket name is not sensitive, it's just an identifier, and knowing a bucket name alone doesn't grant access, IAM permissions control that, so it's fine to have the state bucket name in code.
 >
 > **What should be in secrets:**
@@ -303,6 +301,18 @@ jobs:
 > - Region names
 > - Resource configurations
 > - Backend configuration
+
+### CI/CD testing - Step 4: you need to configure an S3 bucket for Terraform remote state
+
+- Go to the **Amazon S3** console → **Buckets** → **General purpose buckets** and click on **Create bucket** to create the S3 bucket for the Terraform state; this must be done before Terraform can use it as backend; the S3 state bucket is often created separately, either manually or in a "bootstrap" Terraform project, before the main project can use it; we will create it manually in the AWS console, and when we run the pipeline, Terraform `init` will find the bucket and store the state there
+  - **Bucket name:** my-terraform-state-bucket (or pick any unique name and update `main.tf` to match)
+  - **Region:** must match the region in your backend block
+  - Leave defaults (Block Public Access enabled, etc.)
+  - Click **Create bucket**
+
+### CI/CD testing - Step 5: testing the pipeline
+
+Now, everything is in place to run your pipeline!
 
 ### Local testing
 
@@ -324,6 +334,8 @@ aws configure
 this will prompt for the access key, secret key, and default region.
 
 > In GitHub Actions, the credentials come from secrets automatically. Locally, you need to provide them through one of these methods.
+
+Then, you can try to run the `terraform init → plan → apply` workflow locally, from the `/my-infra` directory.
 
 ## AWS infrastructure resources after deployment
 
